@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:my_application/Server.dart';
-
+import 'package:fluttertoast/fluttertoast.dart';
 class HostPage extends StatefulWidget {
   const HostPage({Key? key}) : super(key: key);
 
@@ -17,6 +17,10 @@ class _HostPageState extends State<HostPage> {
   final TextEditingController nationalityController = TextEditingController();
   Server server = Server();
 
+  late FToast fluttertoast;
+
+
+
   Map transportMap = {
     'Bus': false,
     'Trolley': false,
@@ -28,7 +32,37 @@ class _HostPageState extends State<HostPage> {
   void initState(){
     super.initState();
     _get_info();
+    fluttertoast = FToast();
+    fluttertoast.init(context);
   }
+
+  showNotif(){
+    Widget toast = Container(
+      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+      decoration: BoxDecoration(borderRadius: BorderRadius.circular(25),color: Colors.green,),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [Icon(Icons.check_box,),
+        SizedBox(width: 12,),
+          Text('Info Updated!',style: TextStyle(color: Colors.white),)
+        ],
+      ),
+    );
+
+    fluttertoast.showToast(
+      child: toast,
+      gravity: ToastGravity.BOTTOM,
+      toastDuration: Duration(seconds: 4),positionedToastBuilder: (context, child) {
+      return Positioned(
+        child: child,
+        top: 320.0,
+        left: 120.0,
+      );
+    }
+
+    );
+  }
+
   void _get_info(){
     try{
       server.getUserInfo()?.then((snapshot){
@@ -180,6 +214,7 @@ class _HostPageState extends State<HostPage> {
               ElevatedButton(
                 onPressed: (){ //add alert button
                   _updateInfo();
+                  showNotif();
                   },
                 child: Text('Update Info'),
               ),
